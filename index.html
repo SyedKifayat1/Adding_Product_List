@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th {
+            background-color: #333;
+            color: #fff;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        th:nth-child(4), td:nth-child(4) {
+            text-align: right;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 90%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .btn {
+            background-color: #333;
+            color: #fff;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #555;
+        }
+
+        @media (max-width: 768px) {
+            /* Adjust styles for smaller screens */
+            .container {
+                padding: 10px;
+            }
+
+            table th {
+                padding: 10px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            input[type="text"], input[type="number"] {
+                padding: 6px;
+            }
+        }
+    </style>
+    <title>Add Products</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Add Products</h1>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Action</th>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <th>Grand Total</th>
+                <td id="grand_total">0.00</td>
+            </tr>
+        </table>
+        <div class="btn-center">
+            <button class="btn" onclick="addrow()">Add Product</button>
+        </div>
+    </div>
+
+    <script>
+        function addrow() {
+            const table = document.querySelector('table');
+            const previousRow = table.rows[table.rows.length - 1];
+
+            if (previousRow) {
+                const inputs = previousRow.getElementsByTagName('input');
+                for (let i = 0; i < inputs.length; i++) {
+                    if (!inputs[i].value) {
+                        alert("Please fill all cells in the previous row before adding a new one.");
+                        return;
+                    }
+                }
+            }
+
+            const newrow = table.insertRow(-1);
+            const productname = newrow.insertCell(0);
+            const price = newrow.insertCell(1);
+            const quantity = newrow.insertCell(2);
+            const total = newrow.insertCell(3);
+            const action = newrow.insertCell(4);
+
+            productname.innerHTML = '<input type="text" class="productname">';
+            price.innerHTML = '<input type="number" class="price" step="0.01">';
+            quantity.innerHTML = '<input type="number" class="quantity" step="1">';
+            total.innerHTML = '<span class="total">0.00</span>';
+            action.innerHTML = '<button onclick="deleteRow(this)">Delete</button>';
+
+            const input = newrow.getElementsByTagName('input');
+            for (let i = 0; i < input.length; i++) {
+                input[i].addEventListener('input', calculateProductTotal);
+            }
+        }
+
+        function calculateProductTotal() {
+            const row = this.parentNode.parentNode;
+            const price = parseFloat(row.querySelector('.price').value);
+            const quantity = parseInt(row.querySelector('.quantity').value);
+            const Total = quantity * price;
+            if (!isNaN(Total)) {
+                row.querySelector('.total').textContent = Total.toFixed(2);
+            } else {
+                row.querySelector('.total').textContent = "0.00";
+            }
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            const totalElements = document.querySelectorAll('.total');
+            let grandtotal = 0;
+            totalElements.forEach(totalElement => {
+                grandtotal += parseFloat(totalElement.textContent);
+            });
+            document.getElementById("grand_total").textContent = grandtotal.toFixed(2);
+        }
+
+        function deleteRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            calculateGrandTotal();
+        }
+    </script>
+</body>
+</html>
+
+
+
